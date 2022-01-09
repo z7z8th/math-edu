@@ -1,9 +1,8 @@
 
-let low = 0, high = 20
 let result_max = 20
 let total_cnt = 100
 
-function rand_int() {
+function rand_int(low, high) {
 	return parseInt(Math.random()*(high-low) + low)
 }
 
@@ -20,22 +19,16 @@ for (i=0; i<total_cnt; i++) {
 	let result
 	do {
 		td = $('<td>')
-		let l1 = rand_int()
-		let l2 = rand_int()
-		if (i%2 == 0) {
-			expr = `${l1} + ${l2} = `
-			result = l1 + l2
-			td.data('expr',   expr)
-			td.data('result', result)
-		} else {
-			if (l1 < l2) {
-				[l1, l2] = [l2, l1]
-			}
-			expr = `${l1} - ${l2} = `
-			result = l1 - l2
-			td.data('expr',   expr)
-			td.data('result', result)
+		let l1 = rand_int(10, 16)
+		let l2 = rand_int(5, 10)
+
+		if (l1 < l2) {
+			[l1, l2] = [l2, l1]
 		}
+		expr = `${l1} - ${l2} = `
+		result = l1 - l2
+		td.data('expr',   expr)
+		td.data('result', result)
 	} while (result < 0 || result > 20)
 	td.append(`<label>${expr}</label>`)
 	t.append($('<tr/>').append(`<td style="text-align: center; color: white; background: gray;">${i}</font></td>`).append('<td class=judge style="width: 1em" />').append(td).append('<td><input type=number></td><td class=time_used></td>'))
