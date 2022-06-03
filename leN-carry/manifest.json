@@ -1,0 +1,9 @@
+{
+	"$schema": "https://json.schemastore.org/web-manifest-combined.json",
+	"name": "leN",
+	"short_name": "leN",
+	"start_url": ".",
+	"display": "standalone",
+	"background_color": "#fff",
+	"description": "AutoGen leN exams."
+  }
