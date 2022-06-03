@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Less than or Equal N</title>
+	<script src="../jquery-3.6.0.js"></script>
+	<style>
+		td {
+			text-align: right;
+		}
+		input {
+			width: 3em;
+		}
+	</style>
+</head>
+<body>
+	<div id="main" style="margin-top: 3.5rem; ">
+		<label>max result: </label><input type="tel" id="result_max" style="width: 4em;" value="100"/><br>
+		<label>ones low: </label><input type="tel" id="ones_low" style="width: 4em;" value="0"/><br>
+		<label>ones high: </label><input type="tel" id="ones_high" style="width: 4em;" value="9"/><br>
+		<label for="plus_only">plus only:</label><input type="checkbox" id="plus_only"><br>
+		<label for="minus_only">minus only:</label><input type="checkbox" id="minus_only"><br>
+		<input type="button" value="Generate" style="width: fit-content; margin-left: 6em;" onclick="gen_handler()">
+		<table></table>
+	</div>
+	<script src="./leN.js"></script>
+</body>
+</html>
