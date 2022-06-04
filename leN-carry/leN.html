@@ -3,10 +3,18 @@
 <head>
 	<link rel="manifest" href="manifest.json">
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=280, initial-scale=2, user-scalable=no">
 	<title>Less than or Equal N</title>
 	<script src="../jquery-3.6.0.js"></script>
 	<style>
+		html {
+			font-size: large;
+			overflow-x: hidden;
+			overflow-y: scroll;
+		}
+		#main {
+			margin: 3.5rem 1rem 1rem 1rem;
+		}
 		td {
 			text-align: right;
 		}
@@ -16,7 +24,7 @@
 	</style>
 </head>
 <body>
-	<div id="main" style="margin-top: 3.5rem; ">
+	<div id="main" >
 		<label>max result: </label><input type="tel" id="result_max" style="width: 4em;" value="100"/><br>
 		<label>ones low: </label><input type="tel" id="ones_low" style="width: 4em;" value="0"/><br>
 		<label>ones high: </label><input type="tel" id="ones_high" style="width: 4em;" value="9"/><br>
