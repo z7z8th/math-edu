@@ -18,22 +18,21 @@ $('#main').append('<div style="position: fixed; top: 0px; width: 170px; padding:
 					'</div>')
 // $('#main').append('<table style="margin-top: 3.5rem; "/>')
 
+
 function update_input_handlers()
 {
 	let start
 	let last
-
-
 	function check_result(node, onfly) {
-		if (!start) {
+		if (start === undefined) {
 			start = new Date().getTime()
 			last = start
 		}
-		let td = node.parent()
-		let ok = node.val() == td.data('result')
-		console.log('result ', ok, ' : ', node.val(), ' == ', td.data('result'))
+		let td_ret = node.parent()
+		let ok = node.val() == td_ret.data('result')
+		console.log('result ', ok, ' : ', node.val(), ' == ', td_ret.data('result'))
 		if (onfly && !ok) {
-			return;
+			return
 		}
 
 		// freeze node
@@ -47,28 +46,31 @@ function update_input_handlers()
 
 		// time elapsed
 		let now = new Date().getTime()
+		row.children('.time_used').html(`${Math.floor((now-last)/1000)}秒`)
+
 		let elapsed = (now - start)/1000
 		let mins = Math.floor(elapsed/60)
 		let seconds = Math.floor(elapsed % 60)
-		row.children('.time_used').html(`${Math.floor((now-last)/1000)}秒`)
-		last = now
 		$('#time_used').html(`${mins}分${seconds}秒`)
+		last = now
 
 		// focus next
-		let idx = td.data('idx')
+		let idx = td_ret.data('idx')
 		$(`#result_${idx+1}`).focus()
 	}
 
 	function onkeyup(e) {
-		check_result($(e.target), true);
+		check_result($(e.target), true)
+		return true
 	}
 
 	function onchange(e) {
-		check_result($(e.target), false);
+		check_result($(e.target), false)
+		return true
 	}
 
 	$('input.result').on('keyup', onkeyup)
-	$('input.result').on('change', onchange)
+	// $('input.result').on('change', onchange)
 }
 
 function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
@@ -79,11 +81,9 @@ function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
 	t.empty()
 
 	for (i=0; i<total_cnt; i++) {
-		let td
 		let expr
 		let result
 		do {
-			td = $('<td>')
 			let l1 = rand_int(low, result_max, 3, 6)
 			let l2 = rand_int(low, result_max, ones_low, ones_high)
 			if (plus_only || !minus_only && i%2 == 0) {
@@ -97,6 +97,7 @@ function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
 				result = l1 - l2
 			}
 		} while (result < 0 || result > result_max)
+		let td = $('<td>')
 		td.append(`<label>${expr}</label>`)
 
 		let td_ret = $(`<td><input type="tel" id="result_${i}" class="result" style="width: 4em;"></td>`)
@@ -104,7 +105,13 @@ function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
 		td_ret.data('result', result)
 		td_ret.data('idx', i)
 
-		t.append($('<tr/>').append(`<td style="text-align: center; color: white; background: gray;">${i}</font></td>`).append('<td class="judge" style="width: 1em" />').append(td).append(td_ret).append(`<td class="time_used"></td>`))
+		let tr = $('<tr/>')
+		tr.append(`<td style="text-align: center; color: white; background: gray;">${i}</font></td>`)
+		tr.append('<td class="judge" style="width: 1em" />')
+		tr.append(td)
+		tr.append(td_ret)
+		tr.append(`<td class="time_used"></td>`)
+		t.append(tr)
 	}
 
 	update_input_handlers();
