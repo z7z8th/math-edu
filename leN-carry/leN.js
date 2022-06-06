@@ -23,22 +23,29 @@ function update_input_handlers()
 	let start
 	let last
 
-	$('input.result').on('change', (e) => {
+
+	function check_result(node, onfly) {
 		if (!start) {
 			start = new Date().getTime()
 			last = start
 		}
-		let node = $(e.target)
-		node.prop('disabled', true)
 		let td = node.parent()
-		let ok = node.val() == td.prev().data('result')
-		console.log('result ', ok, ' : ', node.val(), ' == ', td.prev().data('result'))
+		let ok = node.val() == td.data('result')
+		console.log('result ', ok, ' : ', node.val(), ' == ', td.data('result'))
+		if (onfly && !ok) {
+			return;
+		}
+
+		// freeze node
+		node.prop('disabled', true)
+
+		// update statistics
 		let row = node.parent().parent()
 		row.children('.judge').html(`<font color=${ok && "green" || "red"}>${ok && "✅" || "❌"}</font>`).attr('ok', ok)
-		let len = $('.judge').filter((idx, elem) => {
-			return $(elem).attr('ok') === 'true'
-		}).length
+		let len = $('.judge').filter((idx, elem) => { return $(elem).attr('ok') === 'true' }).length
 		$('#ok_rate').html(`${len}/${total_cnt}`)
+
+		// time elapsed
 		let now = new Date().getTime()
 		let elapsed = (now - start)/1000
 		let mins = Math.floor(elapsed/60)
@@ -46,7 +53,22 @@ function update_input_handlers()
 		row.children('.time_used').html(`${Math.floor((now-last)/1000)}秒`)
 		last = now
 		$('#time_used').html(`${mins}分${seconds}秒`)
-	})
+
+		// focus next
+		let idx = td.data('idx')
+		$(`#result_${idx+1}`).focus()
+	}
+
+	function onkeyup(e) {
+		check_result($(e.target), true);
+	}
+
+	function onchange(e) {
+		check_result($(e.target), false);
+	}
+
+	$('input.result').on('keyup', onkeyup)
+	$('input.result').on('change', onchange)
 }
 
 function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
@@ -67,20 +89,22 @@ function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
 			if (plus_only || !minus_only && i%2 == 0) {
 				expr = `${l1} + ${l2} = `
 				result = l1 + l2
-				td.data('expr',   expr)
-				td.data('result', result)
 			} else {
 				if (l1 < l2) {
 					[l1, l2] = [l2, l1]
 				}
 				expr = `${l1} - ${l2} = `
 				result = l1 - l2
-				td.data('expr',   expr)
-				td.data('result', result)
 			}
 		} while (result < 0 || result > result_max)
 		td.append(`<label>${expr}</label>`)
-		t.append($('<tr/>').append(`<td style="text-align: center; color: white; background: gray;">${i}</font></td>`).append('<td class="judge" style="width: 1em" />').append(td).append('<td><input type="tel" class="result" style="width: 4em;"></td><td class="time_used"></td>'))
+
+		let td_ret = $(`<td><input type="tel" id="result_${i}" class="result" style="width: 4em;"></td>`)
+		td_ret.data('expr',   expr)
+		td_ret.data('result', result)
+		td_ret.data('idx', i)
+
+		t.append($('<tr/>').append(`<td style="text-align: center; color: white; background: gray;">${i}</font></td>`).append('<td class="judge" style="width: 1em" />').append(td).append(td_ret).append(`<td class="time_used"></td>`))
 	}
 
 	update_input_handlers();
