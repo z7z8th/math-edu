@@ -1,38 +1,76 @@
 <!doctype html>
 <html>
+
 <head>
 	<link rel="manifest" href="manifest.json">
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=280, initial-scale=1, user-scalable=no">
+	<meta name="viewport" content="width=180, initial-scale=1, user-scalable=no">
 	<title>Less than or Equal N</title>
 	<script src="../jquery-3.6.0.js"></script>
 	<style>
 		html {
-			font-size: large;
+			font-family: monospace;
+			font-size: x-large;
 			overflow-x: hidden;
 			overflow-y: scroll;
 		}
+
 		#main {
 			margin: 3.5rem 1rem 1rem 1rem;
 		}
+
 		td {
 			text-align: right;
 		}
+
+		td.optv {
+			text-align: left;
+		}
+
 		input {
 			width: 3em;
 		}
 	</style>
 </head>
+
 <body>
-	<div id="main" >
-		<label>max result: </label><input type="tel" id="result_max" style="width: 4em;" value="100"/><br>
-		<label>ones low: </label><input type="tel" id="ones_low" style="width: 4em;" value="0"/><br>
-		<label>ones high: </label><input type="tel" id="ones_high" style="width: 4em;" value="9"/><br>
-		<label for="plus_only">plus only:</label><input type="checkbox" id="plus_only"><br>
-		<label for="minus_only">minus only:</label><input type="checkbox" id="minus_only"><br>
-		<input type="button" value="Generate" style="width: fit-content; margin-left: 6em;" onclick="gen_handler()">
+	<div id="main">
+			<table>
+				<tr>
+					<td><label>max result: </label></td>
+					<td class="optv"><input type="tel" id="result_max" style="width: 4em;" value="100" /></td>
+				</tr>
+				<tr>
+					<td>ones low:</td>
+					<td class="optv"> L <input type="tel" id="l_ones_low" style="width: 4em;" value="3" /> R <input
+							type="tel" id="r_ones_low" style="width: 4em;" value="6" /></td>
+				</tr>
+				<tr>
+					<td>ones high:</td>
+					<td class="optv"> L <input type="tel" id="l_ones_high" style="width: 4em;" value="6" /> R <input
+							type="tel" id="r_ones_high" style="width: 4em;" value="9" /></td>
+				</tr>
+				<tr>
+					<td><label for="plus_only">plus only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="plus_only"></td>
+				</tr>
+				<tr>
+					<td><label for="minus_only">minus only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="minus_only"></td>
+				</tr>
+				<tr>
+					<td><label for="mixed">mixed:</label></td>
+					<td class="optv"><input type="radio" name="type" id="mixed" checked></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td class="optv"><input type="button" value="Generate" style="width: fit-content; font-size: x-large; /*margin-left: 6em;*/"
+							onclick="gen_handler()"></td>
+				</tr>
+			</table>
 		<!-- <table></table> -->
 	</div>
 	<script src="./leN.js"></script>
 </body>
+
 </html>

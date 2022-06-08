@@ -6,11 +6,16 @@ let correct_cnt = 0
 let modified_cnt = 0
 
 function rand_int(low, high, ones_low, ones_high) {
+	if (low >= high) {
+		alert('max result too low')
+		return 0
+	}
+	let tried = 0
 	let i, ones
 	do {
 		i = parseInt(Math.random()*(high-low) + low)
 		ones = i % 10
-	} while (high > 10 && i <= 10 || ones < ones_low || ones > ones_high)
+	} while (++tried < 20 && (ones < ones_low || ones > ones_high))
 	return i
 }
 
@@ -19,7 +24,7 @@ ok rate: <label id='ok_rate' ></label><br>
 time used: <label id='time_used'></label>
 <div id='log'></log>
 </div>`)
-$('#main').append('<table/>')
+$('#main').append('<table id="questions"/>')
 
 
 function update_input_handlers()
@@ -28,14 +33,13 @@ function update_input_handlers()
 	let last
 	function check_result(node, onfly, modify) {
 		if (start === undefined) {
-			start = Date.now()
-			last = start
-			// $('#log').append(`init start ${start}, last ${last}<br/>`)
+			last = start = Date.now()
 		}
+		if (node.data('ok') !== undefined)
+			return
 
 		let td_answer = node.parent()
 		let ok = node.val() == td_answer.data('result')
-		// console.log('result ', ok, ' : ', node.val(), ' == ', td_answer.data('result'))
 		let row = node.parent().parent()
 		if (modify) {
 			node.data('modified', true)
@@ -46,6 +50,7 @@ function update_input_handlers()
 
 		// freeze node
 		node.prop('disabled', true)
+		node.data('ok', ok)
 
 		// update statistics
 		row.children('.judge').html(`<font color=${ok && 'green' || 'red'}>${ok && '✅' || '❌'}</font>`)
@@ -89,22 +94,34 @@ function update_input_handlers()
 	}
 
 	$('input.answer_input').on('keyup', onkeyup)
-	// $('input.answer_input').on('change', onchange)  // enable this will update `last' twice, and result in elapsed 0
+	$('input.answer_input').on('change', onchange)  // enable this will update `last' twice, and result in elapsed 0
 }
 
-function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
+function reset_stat()
 {
-	let low = 0
-	let t = $('#main > table')
+	correct_cnt = 0
+	modified_cnt = 0
+	last = undefined
+	start = undefined
+	$('#time_used').html(``)
+	$('#ok_rate').html(``)
+}
+
+function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, plus_only, minus_only)
+{
+	let low = 0 //Math.min(10, result_max - 1)
+
+	let t = $('#main > table#questions')
 
 	t.empty()
 
 	for (i=0; i<total_cnt; i++) {
+		let tried = 0
 		let expr
 		let result
 		do {
-			let l1 = rand_int(low, result_max, 3, 6)
-			let l2 = rand_int(low, result_max, ones_low, ones_high)
+			let l1 = rand_int(low, result_max, l_ones_low, l_ones_high)
+			let l2 = rand_int(low, result_max, r_ones_low, r_ones_high)
 			if (plus_only || !minus_only && i%2 == 0) {
 				expr = `${l1} + ${l2} = `
 				result = l1 + l2
@@ -115,7 +132,7 @@ function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
 				expr = `${l1} - ${l2} = `
 				result = l1 - l2
 			}
-		} while (result < 0 || result > result_max)
+		} while (++tried < 20 && (result < 0 || result > result_max))
 		let td_question = $('<td>')
 		td_question.append(`<label>${expr}</label>`)
 
@@ -139,10 +156,14 @@ function gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
 function gen_handler()
 {
 	let result_max = parseInt($('#result_max').val())
-	let ones_low = parseInt($('#ones_low').val())
-	let ones_high = parseInt($('#ones_high').val())
+	let l_ones_low = parseInt($('#l_ones_low').val())
+	let l_ones_high = parseInt($('#l_ones_high').val())
+	let r_ones_low = parseInt($('#r_ones_low').val())
+	let r_ones_high = parseInt($('#r_ones_high').val())
+
 	let minus_only = $('#minus_only').is(':checked')
 	let plus_only = $('#plus_only').is(':checked')
-	console.log(`result_max ${typeof(result_max)}: ${result_max} minus_only ${minus_only}`)
-	gen_exam(result_max, ones_low, ones_high, minus_only, plus_only)
+	// console.log(`result_max ${typeof(result_max)}: ${result_max} minus_only ${minus_only}`)
+	reset_stat()
+	gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, plus_only, minus_only)
 }
