@@ -56,7 +56,7 @@ function update_input_handlers()
 		row.children('.judge').html(`<font color=${ok && 'green' || 'red'}>${ok && '✅' || '❌'}</font>`)
 		if (node.data('modified')) {
 			modified_cnt++
-			row.children('.judge').css('border', '1px solid gray')
+			row.children('.judge').css('border', '1px solid gray').css('border-radius', '5px')
 		}
 		// let len = $('.judge').filter((idx, elem) => { return $(elem).attr('ok') === 'true' }).length
 		if (ok) {
