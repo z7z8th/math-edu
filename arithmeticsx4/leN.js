@@ -8,29 +8,30 @@ let modified_cnt = 0
 let log = console.log
 
 function rand_int(low, high) {
-	if (low >= high) {
-		alert('max result too low')
+	high = high
+	if (low > high) {
+		alert(`low ${low} > high ${high}`)
 		return 0
 	}
 	let tried = 0
 	let i
 	do {
-		i = parseInt(Math.random()*(high-low) + low)
+		i = Math.round(Math.random()*(high-low) + low)
 	} while (++tried < 20)
 	return i
 }
 
-function rand_int_limit_ones(low, high, ones_low, ones_high) {
-	if (low >= high) {
-		alert('max result too low')
+function rand_int_limit_units(low, high, units_low, units_high) {
+	if (low > high) {
+		alert(`low ${low} > high ${high}`)
 		return 0
 	}
 	let tried = 0
-	let i, ones
+	let i, units
 	do {
-		i = parseInt(Math.random()*(high-low) + low)
-		ones = i % 10
-	} while (++tried < 20 && (ones < ones_low || ones > ones_high))
+		i = Math.round(Math.random()*(high-low) + low)
+		units = i % 10
+	} while (++tried < 20 && (units < units_low || units > units_high))
 	return i
 }
 
@@ -122,7 +123,7 @@ function reset_stat()
 	$('#ok_rate').html(``)
 }
 
-function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, plus_only, minus_only, multi_only, div_only)
+function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, multi_only, div_only)
 {
 	let low = 0 //Math.min(10, result_max - 1)
 
@@ -133,8 +134,8 @@ function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, 
 	let gen_funcs = [
 		//+
 		() => {
-			let l1 = rand_int_limit_ones(low, result_max, l_ones_low, l_ones_high)
-			let l2 = rand_int_limit_ones(low, result_max, r_ones_low, r_ones_high)
+			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
+			let l2 = rand_int_limit_units(low, result_max, r_units_low, r_units_high)
 			expr = `${l1} + ${l2} = `
 			result = l1 + l2
 			// log(`expr ${expr} ${result}`)
@@ -142,8 +143,8 @@ function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, 
 		},
 		//-
 		() => {
-			let l1 = rand_int_limit_ones(low, result_max, l_ones_low, l_ones_high)
-			let l2 = rand_int_limit_ones(low, result_max, r_ones_low, r_ones_high)
+			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
+			let l2 = rand_int_limit_units(low, result_max, r_units_low, r_units_high)
 			if (l1 < l2) {
 				[l1, l2] = [l2, l1]
 			}
@@ -154,8 +155,8 @@ function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, 
 		},
 		//*
 		() => {
-			let l1 = rand_int(0, 10)
-			let l2 = rand_int(0, 10)
+			let l1 = rand_int(0, multidiv_units_high)
+			let l2 = rand_int(0, multidiv_units_high)
 			expr = `${l1} * ${l2} = `
 			result = l1 * l2
 			// log(`expr ${expr} ${result}`)
@@ -164,15 +165,12 @@ function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, 
 		//\/
 		() => {
 			do {
-				let l1 = rand_int(0, 100)
-				let l2 = rand_int(1, 10)
-				if (l1 < l2) {
-					[l1, l2] = [l2, l1]
-				}
+				let l2 = rand_int(1, multidiv_units_high)
+				let l1 = rand_int(multidiv_units_high, multidiv_units_high*l2)
 				result = Math.floor(l1/l2)
 				l1 = l2 * result
 				expr = `${l1} / ${l2} = `
-			} while(result > 10)
+			} while(result > multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		}
@@ -219,15 +217,16 @@ function gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, 
 function gen_handler()
 {
 	let result_max = parseInt($('#result_max').val())
-	let l_ones_low = parseInt($('#l_ones_low').val())
-	let l_ones_high = parseInt($('#l_ones_high').val())
-	let r_ones_low = parseInt($('#r_ones_low').val())
-	let r_ones_high = parseInt($('#r_ones_high').val())
+	let l_units_low = parseInt($('#l_units_low').val())
+	let l_units_high = parseInt($('#l_units_high').val())
+	let r_units_low = parseInt($('#r_units_low').val())
+	let r_units_high = parseInt($('#r_units_high').val())
+	let multidiv_units_high = parseInt($('#multidiv_units_high').val())
 
 	let minus_only = $('#minus_only').is(':checked')
 	let plus_only = $('#plus_only').is(':checked')
 	let multi_only = $('#multi_only').is(':checked')
 	let div_only = $('#div_only').is(':checked')	// console.log(`result_max ${typeof(result_max)}: ${result_max} minus_only ${minus_only}`)
 	reset_stat()
-	gen_exam(result_max, l_ones_low, l_ones_high, r_ones_low, r_ones_high, plus_only, minus_only, multi_only, div_only)
+	gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, multi_only, div_only)
 }
