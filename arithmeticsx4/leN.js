@@ -155,8 +155,8 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		},
 		//*
 		() => {
-			let l1 = rand_int(0, multidiv_units_high)
-			let l2 = rand_int(0, multidiv_units_high)
+			let l1 = rand_int(2, multidiv_units_high)
+			let l2 = rand_int(2, multidiv_units_high)
 			expr = `${l1} * ${l2} = `
 			result = l1 * l2
 			// log(`expr ${expr} ${result}`)
