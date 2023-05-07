@@ -8,7 +8,7 @@ let modified_cnt = 0
 let log = console.log
 
 function rand_int(low, high) {
-	high = high
+	// high = high
 	if (low > high) {
 		alert(`low ${low} > high ${high}`)
 		return 0
@@ -34,6 +34,7 @@ function rand_int_limit_units(low, high, units_low, units_high) {
 	} while (++tried < 20 && (units < units_low || units > units_high))
 	return i
 }
+
 
 $('#main').append(`<div style='position: fixed; top: 0px; width: 80%; padding: 4px; color: white; background: teal; '>
 ok rate: <label id='ok_rate' ></label><br>
@@ -144,10 +145,10 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		//-
 		() => {
 			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
-			let l2 = rand_int_limit_units(low, result_max, r_units_low, r_units_high)
-			if (l1 < l2) {
-				[l1, l2] = [l2, l1]
-			}
+			let l2 = rand_int_limit_units(low, l1, r_units_low, r_units_high)
+			// if (l1 < l2) {
+			// 	[l1, l2] = [l2, l1]
+			// }
 			expr = `${l1} - ${l2} = `
 			result = l1 - l2
 			// log(`expr ${expr} ${result}`)
