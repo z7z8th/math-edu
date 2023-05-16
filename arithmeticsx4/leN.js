@@ -67,7 +67,7 @@ function update_input_handlers()
 
 		let row = node.parent().parent()
 		if (modify) {
-			node.data('modified', true)
+			row.data('modified', true)
 		}
 		if (onfly && !ok) {
 			return
@@ -81,7 +81,7 @@ function update_input_handlers()
 		if (final_judge) {
 			row.children('.judge').html(`<font color=${ok && 'green' || 'red'}>${ok && '✅' || '❌'}</font>`)
 
-			if (node.data('modified')) {
+			if (row.data('modified')) {
 				modified_cnt++
 				row.children('.judge').css('border', '1px solid gray').css('border-radius', '5px')
 			}
