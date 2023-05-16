@@ -100,7 +100,7 @@ function update_input_handlers()
 			let elapsed = (now - start)/1000
 			let mins = Math.floor(elapsed/60)
 			let seconds = Math.floor(elapsed % 60)
-			$('#time_used').html(`${mins} m ${seconds} s`)
+			$('#time_used').html(`${mins}分${seconds}秒`)
 			last = now
 			// focus next
 			let idx = td_answer.data('idx')
@@ -228,7 +228,7 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		let td_question = $('<td>')
 		td_question.append(`<label>${expr}</label>`)
 
-		let td_answer = $(`<td class=answer><input type='tel' id='result_${i}' class='answer_input' style='width: 4em;'>${remainder && "...<input type='tel' id='remainder_"+i+"' class='remainder_input' style='width: 4em;'>" || ""}</td>`)
+		let td_answer = $(`<td class=answer><input type='tel' id='result_${i}' class='answer_input' style='min-width: 2em;'>${remainder && "...<input type='tel' id='remainder_"+i+"' class='remainder_input' style='width: 1em;'>" || ""}</td>`)
 		td_answer.data('expr',   expr)
 		td_answer.data('result', result)
 		td_answer.data('remainder', remainder)

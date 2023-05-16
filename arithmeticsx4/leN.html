@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=180, initial-scale=1, user-scalable=no">
 	<title>Less than or Equal N</title>
-	<script src="../jquery-3.6.0.js"></script>
+	<script src="../jquery-3.6.0.min.js"></script>
 	<style>
 		html {
 			font-family: monospace;
@@ -19,6 +19,13 @@
 			margin: 3.5rem 1rem 1rem 1rem;
 		}
 
+		table#questions {
+			border-collapse: collapse;
+		}
+		tr {
+			border: solid gray 1px;
+
+		}
 		td {
 			text-align: right;
 		}
@@ -41,7 +48,7 @@
 			<table>
 				<tr>
 					<td><label>max result: </label></td>
-					<td class="optv"><input type="tel" id="result_max" style="width: 2em;" value="100" /></td>
+					<td class="optv"><input type="tel" id="result_max" style="min-width: 6em;" value="100" /></td>
 				</tr>
 				<tr>
 					<td>+- units low:</td>
