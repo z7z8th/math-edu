@@ -79,7 +79,7 @@ function update_input_handlers()
 
 		// update statistics
 		if (final_judge) {
-				row.children('.judge').html(`<font color=${ok && 'green' || 'red'}>${ok && '✅' || '❌'}</font>`)
+			row.children('.judge').html(`<font color=${ok && 'green' || 'red'}>${ok && '✅' || '❌'}</font>`)
 
 			if (node.data('modified')) {
 				modified_cnt++
@@ -103,9 +103,10 @@ function update_input_handlers()
 			$('#time_used').html(`${mins}分${seconds}秒`)
 			last = now
 			// focus next
-			let idx = td_answer.data('idx')
-			$(`#result_${idx+1}`).focus()
+			row.removeClass('hls_row')
+			$(`#result_${td_answer.data('idx')+1}`).focus()
 		} else {
+			// focus remainder input
 			node.next().focus()
 		}
 	}
@@ -122,8 +123,21 @@ function update_input_handlers()
 		return true
 	}
 
+	function onfocus(e) {
+		let row = $(e.target).parent().parent()
+		row.addClass('hls_row')
+	}
+
+	function losefocus(e) {
+		let row = $(e.target).parent().parent()
+		row.removeClass('hls_row')
+	}
+
 	$('input.answer_input').on('keyup', onkeyup)
 	$('input.answer_input').on('change', onchange)  // enable this will update `last' twice, and result in elapsed 0
+	$('input.answer_input').on('focusin', onfocus)
+	$('input.answer_input').on('focusout', losefocus)
+
 	$('input.remainder_input').on('keyup', onkeyup)
 	$('input.remainder_input').on('change', onchange)  // enable this will update `last' twice, and result in elapsed 0
 }
