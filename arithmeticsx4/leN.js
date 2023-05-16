@@ -184,7 +184,7 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 				let l1 = rand_int(multidiv_units_high, multidiv_units_high*l2)
 				result = Math.floor(l1/l2)
 				l1 = l2 * result
-				expr = `${l1} ÷ ${l2} = `
+				expr = `${l1} / ${l2} = `
 			} while(result > multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
@@ -197,7 +197,7 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 				result = Math.floor(l1/l2)
 				remainder = rand_int(1, l2-1)
 				l1 = l2*result + remainder
-				expr = `${l1} ÷ ${l2} = `
+				expr = `${l1} / ${l2} = `
 			} while(result > multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result, remainder]
