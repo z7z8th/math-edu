@@ -22,13 +22,16 @@
 		td {
 			text-align: right;
 		}
-
+		td.answer {
+			text-align: left;
+		}
 		td.optv {
 			text-align: left;
 		}
 
 		input {
 			width: 3em;
+			text-align: left;
 		}
 	</style>
 </head>
@@ -51,7 +54,7 @@
 							type="tel" id="r_units_high" style="width: 2em;" value="9" /></td>
 				</tr>
 				<tr>
-					<td>*/ units high:</td>
+					<td>×÷ units high:</td>
 					<td class="optv"> <input type="tel" id="multidiv_units_high" style="width: 2em;" value="9" /> </td>
 				</tr>
 				<tr>
@@ -63,12 +66,16 @@
 					<td class="optv"><input type="radio" name="type" id="minus_only"></td>
 				</tr>
 				<tr>
-					<td><label for="multi_only">* only:</label></td>
+					<td><label for="multi_only">× only:</label></td>
 					<td class="optv"><input type="radio" name="type" id="multi_only"></td>
 				</tr>
 				<tr>
-					<td><label for="div_only">/ only:</label></td>
+					<td><label for="div_only">÷ only:</label></td>
 					<td class="optv"><input type="radio" name="type" id="div_only"></td>
+				</tr>
+				<tr>
+					<td><label for="div_only">÷+ only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="div_w_rem_only"></td>
 				</tr>
 				<tr>
 					<td><label for="mixed">mixed:</label></td>
