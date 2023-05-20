@@ -123,20 +123,8 @@ function update_input_handlers()
 		return true
 	}
 
-	function onfocus(e) {
-		let row = $(e.target).parent().parent()
-		row.addClass('hls_row')
-	}
-
-	function losefocus(e) {
-		let row = $(e.target).parent().parent()
-		row.removeClass('hls_row')
-	}
-
 	$('input.answer_input').on('keyup', onkeyup)
 	$('input.answer_input').on('change', onchange)  // enable this will update `last' twice, and result in elapsed 0
-	$('input.answer_input').on('focusin', onfocus)
-	$('input.answer_input').on('focusout', losefocus)
 
 	$('input.remainder_input').on('keyup', onkeyup)
 	$('input.remainder_input').on('change', onchange)  // enable this will update `last' twice, and result in elapsed 0
@@ -152,19 +140,20 @@ function reset_stat()
 	$('#ok_rate').html(``)
 }
 
-function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, multi_only, div_only, div_w_rem_only)
+function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, plus_minus_only, multiply_only, div_only, div_w_rem_only)
 {
 	let low = 0 //Math.min(10, result_max - 1)
+	let result
 
-	let t = $('#main > table#questions')
+	let qtable = $('#main > table#questions')
 
-	t.empty()
+	qtable.empty()
 
 	let gen_funcs = [
 		//+
 		() => {
 			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
-			let l2 = rand_int_limit_units(low, result_max, r_units_low, r_units_high)
+			let l2 = rand_int_limit_units(low, result_max-l1, r_units_low, r_units_high)
 			expr = `${l1} + ${l2} = `
 			result = l1 + l2
 			// log(`expr ${expr} ${result}`)
@@ -174,11 +163,31 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		() => {
 			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
 			let l2 = rand_int_limit_units(low, l1, r_units_low, r_units_high)
-			// if (l1 < l2) {
-			// 	[l1, l2] = [l2, l1]
-			// }
 			expr = `${l1} - ${l2} = `
 			result = l1 - l2
+			// log(`expr ${expr} ${result}`)
+			return [expr, result]
+		},
+		//+-
+		() => {
+			let iter_cnt = parseInt($('#plus_minus_cont_cnt').val())
+			let l1, l2
+			l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
+			expr = `${l1}`
+			result = l1
+			for (c=0; c<iter_cnt; c++) {
+				if (rand_int(0,9) % 2 == 0) { //+
+					l2 = rand_int_limit_units(low, result_max-result, r_units_low, r_units_high)
+					expr += ` + ${l2}`
+					result += l2
+				} else {
+					l2 = rand_int_limit_units(low, result, r_units_low, r_units_high)
+					expr += ` - ${l2}`
+					result -= l2
+				}
+			}
+
+			expr += ' = '
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		},
@@ -218,23 +227,36 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		}
 	]
 
+
+	function onfocus(e) {
+		let row = $(e.target).parent().parent()
+		row.addClass('hls_row')
+	}
+
+	function losefocus(e) {
+		let row = $(e.target).parent().parent()
+		row.removeClass('hls_row')
+	}
+
 	for (i=0; i<total_cnt; i++) {
 		let tried = 0
 		let expr
 		let result
 		let remainder
 		do {
-			let fi = i % 5
+			let fi = i % 6
 			if (plus_only)
 				[expr, result] = gen_funcs[0]()
 			else if (minus_only)
 				[expr, result] = gen_funcs[1]()
-			else if (multi_only)
+			else if (plus_minus_only)
 				[expr, result] = gen_funcs[2]()
-			else if (div_only)
+			else if (multiply_only)
 				[expr, result] = gen_funcs[3]()
+			else if (div_only)
+				[expr, result] = gen_funcs[4]()
 			else if (div_w_rem_only)
-				[expr, result, remainder] = gen_funcs[4]()
+				[expr, result, remainder] = gen_funcs[5]()
 			else
 				[expr, result, remainder] = gen_funcs[fi]()
 			// log(`out ${expr} ${result}`)
@@ -254,7 +276,11 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		tr.append(td_question)
 		tr.append(td_answer)
 		tr.append(`<td class='time_used'></td>`)
-		t.append(tr)
+
+		tr.on('focusout', losefocus)
+		tr.on('focusin', onfocus)
+
+		qtable.append(tr)
 	}
 
 	update_input_handlers();
@@ -271,17 +297,18 @@ function gen_handler()
 
 	let minus_only = $('#minus_only').is(':checked')
 	let plus_only = $('#plus_only').is(':checked')
-	let multi_only = $('#multi_only').is(':checked')
+	let plus_minus_only = $('#plus_minus_only').is(':checked')
+	let multiply_only = $('#multiply_only').is(':checked')
 	let div_only = $('#div_only').is(':checked')
 	let div_w_rem_only = $('#div_w_rem_only').is(':checked')
 	// console.log(`result_max ${typeof(result_max)}: ${result_max} minus_only ${minus_only}`)
 	reset_stat()
-	gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, multi_only, div_only, div_w_rem_only)
+	gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, plus_minus_only, multiply_only, div_only, div_w_rem_only)
 }
 
 // dark/white theme
 let h = new Date().getHours()
-if (h >= 17 || h<7) {
+if (h >= 18 || h<7) {
 	$('html').css('backgroundColor', 'black')
 	$('html').css('color', 'gray')
 } else {

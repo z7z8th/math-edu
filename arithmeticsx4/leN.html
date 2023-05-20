@@ -5,7 +5,7 @@
 	<link rel="manifest" href="manifest.json">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=180, initial-scale=1, user-scalable=no">
-	<title>Less than or Equal N</title>
+	<title>四则运算</title>
 	<script src="../jquery-3.6.0.min.js"></script>
 	<style>
 		html {
@@ -72,6 +72,10 @@
 					<td class="optv"> <input type="tel" id="multidiv_units_high" style="width: 2em;" value="9" /> </td>
 				</tr>
 				<tr>
+					<td>+- continuous count:</td>
+					<td class="optv"> <input type="tel" id="plus_minus_cont_cnt" style="width: 2em;" value="2" /> </td>
+				</tr>
+				<tr>
 					<td><label for="plus_only">+ only:</label></td>
 					<td class="optv"><input type="radio" name="type" id="plus_only"></td>
 				</tr>
@@ -80,8 +84,12 @@
 					<td class="optv"><input type="radio" name="type" id="minus_only"></td>
 				</tr>
 				<tr>
-					<td><label for="multi_only">× only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="multi_only"></td>
+					<td><label for="plus_minus_only">+- only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="plus_minus_only"></td>
+				</tr>
+				<tr>
+					<td><label for="multiply_only">× only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="multiply_only"></td>
 				</tr>
 				<tr>
 					<td><label for="div_only">÷ only:</label></td>
