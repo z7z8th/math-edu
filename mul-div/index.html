@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+<head>
+	<link rel="manifest" href="manifest.json">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=180, initial-scale=1, user-scalable=no">
+	<title>高位乘除</title>
+	<script src="../jquery-3.6.0.min.js"></script>
+	<style>
+		html {
+			font-family: monospace;
+			font-size: x-large;
+			overflow-x: hidden;
+			overflow-y: scroll;
+		}
+
+		#main {
+			margin: 3.5rem 0.2rem 1rem 0.2rem;
+		}
+
+		table#questions {
+			border-collapse: collapse;
+		}
+
+		tr {
+			border: solid gray 1px;
+		}
+
+		tr.hls_row {
+			border: solid darkgreen 3px;
+		}
+
+		td {
+			text-align: right;
+		}
+
+		td.answer {
+			text-align: left;
+		}
+
+		td.optv {
+			text-align: left;
+		}
+
+		input {
+			width: 3em;
+			text-align: left;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="main">
+			<table>
+				<tr>
+					<td>×÷ left range:</td>
+					<td class="optv">
+						<input type="tel" id="l_low" style="width: 3em;" value="100" /> ~
+						<input type="tel" id="l_high" style="width: 3em;" value="1000" />
+					</td>
+				</tr>
+				<tr>
+					<td>×÷ right range:</td>
+					<td class="optv">
+						<input type="tel" id="r_low" style="width: 3em;" value="1" /> ~
+						<input type="tel" id="r_high" style="width: 3em;" value="10" />
+					</td>
+				</tr>
+				<!-- <tr>
+					<td>×÷ conti-count:</td>
+					<td class="optv"> <input type="tel" id="plus_minus_cont_cnt" style="width: 2em;" value="2" /> </td>
+				</tr> -->
+				<tr>
+					<td><label for="multiply_only">× only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="multiply_only"></td>
+				</tr>
+				<tr>
+					<td><label for="div_only">÷ only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="div_only"></td>
+				</tr>
+				<tr>
+					<td><label for="div_w_rem_only">÷+ only:</label></td>
+					<td class="optv"><input type="radio" name="type" id="div_w_rem_only"></td>
+				</tr>
+				<tr>
+					<td><label for="mixed">mixed:</label></td>
+					<td class="optv"><input type="radio" name="type" id="mixed" checked></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td class="optv"><input type="button" value="Generate" style="width: fit-content; font-size: x-large; /*margin-left: 6em;*/"
+							onclick="gen_handler()"></td>
+				</tr>
+			</table>
+		<!-- <table></table> -->
+	</div>
+	<script src="./mul-div.js"></script>
+</body>
+
+</html>
