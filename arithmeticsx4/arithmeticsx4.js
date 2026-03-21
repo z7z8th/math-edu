@@ -424,7 +424,7 @@ on_muldiv_duo_digits_change()
 let h = new Date().getHours()
 if (h >= 18 || h<7) {
 	$('html').css('backgroundColor', 'black')
-	$('html').css('color', 'gray')
+	$('html').css('color', 'lightgray')
 } else {
 	$('html').css('backgroundColor', 'white')
 	$('html').css('color', 'black')
