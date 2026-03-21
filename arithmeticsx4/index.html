@@ -19,6 +19,12 @@
 			margin: 3.5rem 0.2rem 1rem 0.2rem;
 		}
 
+		table {
+			border-collapse: collapse;
+			border-style: solid gray 1px;
+			margin-bottom: 2rem;
+		}
+
 		table#questions {
 			border-collapse: collapse;
 		}
@@ -52,64 +58,106 @@
 
 <body>
 	<div id="main">
-			<table>
-				<tr>
-					<td><label>max result: </label></td>
-					<td class="optv"><input type="tel" id="result_max" style="min-width: 6em;" value="100" /></td>
-				</tr>
-				<tr>
-					<td>+- units low:</td>
-					<td class="optv"> L <input type="tel" id="l_units_low" style="width: 2em;" value="0" /> R <input
-							type="tel" id="r_units_low" style="width: 2em;" value="6" /></td>
-				</tr>
-				<tr>
-					<td>+- units high:</td>
-					<td class="optv"> L <input type="tel" id="l_units_high" style="width: 2em;" value="6" /> R <input
-							type="tel" id="r_units_high" style="width: 2em;" value="9" /></td>
-				</tr>
-				<tr>
-					<td>×÷ units high:</td>
-					<td class="optv"> <input type="tel" id="multidiv_units_high" style="width: 2em;" value="9" /> </td>
-				</tr>
-				<tr>
-					<td>+- continuous count:</td>
-					<td class="optv"> <input type="tel" id="plus_minus_cont_cnt" style="width: 2em;" value="2" /> </td>
-				</tr>
-				<tr>
-					<td><label for="plus_only">+ only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="plus_only"></td>
-				</tr>
-				<tr>
-					<td><label for="minus_only">- only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="minus_only"></td>
-				</tr>
-				<tr>
-					<td><label for="plus_minus_only">+- only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="plus_minus_only"></td>
-				</tr>
-				<tr>
-					<td><label for="multiply_only">× only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="multiply_only"></td>
-				</tr>
-				<tr>
-					<td><label for="div_only">÷ only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="div_only"></td>
-				</tr>
-				<tr>
-					<td><label for="div_only">÷+ only:</label></td>
-					<td class="optv"><input type="radio" name="type" id="div_w_rem_only"></td>
-				</tr>
-				<tr>
-					<td><label for="mixed">mixed:</label></td>
-					<td class="optv"><input type="radio" name="type" id="mixed" checked></td>
-				</tr>
-				<tr>
-					<td></td>
-					<td class="optv"><input type="button" value="Generate" style="width: fit-content; font-size: x-large; /*margin-left: 6em;*/"
-							onclick="gen_handler()"></td>
-				</tr>
-			</table>
-		<!-- <table></table> -->
+		<div style='position: fixed; top: 0px; width: 80%; padding: 4px; color: white; background: teal; '>
+			准确率: <label id='ok_rate'></label><br>
+			用时: <label id='time_used'></label>
+			<div id='log'></div>
+		</div>
+
+		<table>
+			<thead>
+				<tr>选项</tr>
+			</thead>
+			<tr>
+				<td><label>结果范围 </label></td>
+				<td class="optv">
+					<input type="tel" id="result_min" style="min-width: 6em;" value="10" />
+					<input type="tel" id="result_max" style="min-width: 6em;" value="100" />
+				</td>
+			</tr>
+			<tr>
+				<td>+-法左边个位范围</td>
+				<td class="optv">
+					<input type="tel" id="l_units_low" style="width: 2em;" value="0" />
+					~
+					<input type="tel" id="l_units_high" style="width: 2em;" value="6" />
+				</td>
+			</tr>
+			<tr>
+				<td>+-法右边个位范围</td>
+				<td class="optv">
+					<input type="tel" id="r_units_low" style="width: 2em;" value="6" />
+					~
+					<input type="tel" id="r_units_high" style="width: 2em;" value="9" />
+				</td>
+			</tr>
+			<tr>
+				<td>×÷法个位上限</td>
+				<td class="optv"> <input type="tel" id="multidiv_units_high" style="width: 2em;" value="9" /> </td>
+			</tr>
+			<tr>
+				<td>连+/连-次数</td>
+				<td class="optv">
+					<input type="tel" id="plus_minus_cont_cnt" style="width: 2em;" value="2" />
+				</td>
+			</tr>
+			<tr>
+				<td class="optv" colspan="3">计算类型</td>
+			</tr>
+			<tr>
+				<td><label for="plus_only">+</label></td>
+				<td class="optv">
+					<input type="radio" name="type" id="plus_only">
+				</td>
+			</tr>
+			<tr>
+				<td><label for="minus_only">-</label></td>
+				<td class="optv">
+					<input type="radio" name="type" id="minus_only">
+				</td>
+			</tr>
+			<tr>
+				<td><label for="plus_minus_only">+-</label></td>
+				<td class="optv">
+					<input type="radio" name="type" id="plus_minus_only">
+				</td>
+			</tr>
+			<tr>
+				<td><label for="multiply_only">×</label></td>
+				<td class="optv">
+					<input type="radio" name="type" id="multiply_only">
+				</td>
+			</tr>
+			<tr>
+				<td><label for="div_only">÷</label></td>
+				<td class="optv">
+					<input type="radio" name="type" id="div_only">
+				</td>
+			</tr>
+			<tr>
+				<td><label for="div_only">÷ ...</label>
+				</td>
+				<td class="optv">
+					<input type="radio" name="type" id="div_w_rem_only">
+				</td>
+			</tr>
+			<tr>
+				<td><label for="mixed">混合</label></td>
+				<td class="optv">
+					<input type="radio" name="type" id="mixed" checked>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td class="optv">
+					<input type="button" value="Generate"
+						style="width: fit-content; font-size: x-large; /*margin-left: 6em;*/" onclick="gen_handler()">
+				</td>
+			</tr>
+		</table>
+		
+		<table id="questions"></table>
+
 	</div>
 	<script src="./arithmeticsx4.js"></script>
 </body>

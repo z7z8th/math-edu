@@ -1,6 +1,6 @@
 
 // let low = 0, high = 100
-// let result_max = 100
+// let opts.result_max = 100
 let total_cnt = 100
 let correct_cnt = 0
 let modified_cnt = 0
@@ -17,7 +17,7 @@ function rand_int(low, high) {
 	let i
 	do {
 		i = Math.round(Math.random()*(high-low) + low)
-	} while (++tried < 20)
+	} while (++tried < 50)
 	return i
 }
 
@@ -36,12 +36,8 @@ function rand_int_limit_units(low, high, units_low, units_high) {
 }
 
 
-$('#main').append(`<div style='position: fixed; top: 0px; width: 80%; padding: 4px; color: white; background: teal; '>
-ok rate: <label id='ok_rate' ></label><br>
-time used: <label id='time_used'></label>
-<div id='log'></log>
-</div>`)
-$('#main').append('<table id="questions"/>')
+$('#main').append(``)
+$('#main').append('')
 
 
 function update_input_handlers()
@@ -140,9 +136,11 @@ function reset_stat()
 	$('#ok_rate').html(``)
 }
 
-function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, plus_minus_only, multiply_only, div_only, div_w_rem_only)
+function gen_exam(opts)
 {
-	let low = 0 //Math.min(10, result_max - 1)
+	// opts.result_max, opts.l_units_low, opts.l_units_high, opts.r_units_low, opts.r_units_high, 
+	// opts.multidiv_units_high, opts.plus_only, opts.minus_only, opts.plus_minus_only, opts.multiply_only, opts.div_only, opts.div_w_rem_only
+	let low = 0 //Math.min(10, opts.result_max - 1)
 	let result
 
 	let qtable = $('#main > table#questions')
@@ -152,38 +150,38 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 	let gen_funcs = [
 		//+
 		() => {
-			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
-			let l2 = rand_int_limit_units(low, result_max-l1, r_units_low, r_units_high)
-			expr = `${l1} + ${l2} = `
-			result = l1 + l2
+			let lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
+			let rhs = rand_int_limit_units(low, opts.result_max-lhs, opts.r_units_low, opts.r_units_high)
+			expr = `${lhs} + ${rhs} = `
+			result = lhs + rhs
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		},
 		//-
 		() => {
-			let l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
-			let l2 = rand_int_limit_units(low, l1, r_units_low, r_units_high)
-			expr = `${l1} - ${l2} = `
-			result = l1 - l2
+			let lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
+			let rhs = rand_int_limit_units(low, lhs, opts.r_units_low, opts.r_units_high)
+			expr = `${lhs} - ${rhs} = `
+			result = lhs - rhs
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		},
 		//+-
 		() => {
 			let iter_cnt = parseInt($('#plus_minus_cont_cnt').val())
-			let l1, l2
-			l1 = rand_int_limit_units(low, result_max, l_units_low, l_units_high)
-			expr = `${l1}`
-			result = l1
+			let lhs, rhs
+			lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
+			expr = `${lhs}`
+			result = lhs
 			for (c=0; c<iter_cnt; c++) {
 				if (rand_int(0,9) % 2 == 0) { //+
-					l2 = rand_int_limit_units(low, result_max-result, r_units_low, r_units_high)
-					expr += ` + ${l2}`
-					result += l2
+					rhs = rand_int_limit_units(low, opts.result_max-result, opts.r_units_low, opts.r_units_high)
+					expr += ` + ${rhs}`
+					result += rhs
 				} else {
-					l2 = rand_int_limit_units(low, result, r_units_low, r_units_high)
-					expr += ` - ${l2}`
-					result -= l2
+					rhs = rand_int_limit_units(low, result, opts.r_units_low, opts.r_units_high)
+					expr += ` - ${rhs}`
+					result -= rhs
 				}
 			}
 
@@ -193,35 +191,35 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		},
 		//×
 		() => {
-			let l1 = rand_int(2, multidiv_units_high)
-			let l2 = rand_int(2, multidiv_units_high)
-			expr = `${l1} × ${l2} = `
-			result = l1 * l2
+			let lhs = rand_int(2, opts.multidiv_units_high)
+			let l2 = rand_int(2, opts.multidiv_units_high)
+			expr = `${lhs} × ${l2} = `
+			result = lhs * l2
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		},
 		//÷
 		() => {
 			do {
-				let l2 = rand_int(2, multidiv_units_high)
-				let l1 = rand_int(multidiv_units_high, multidiv_units_high*l2)
-				result = Math.floor(l1/l2)
-				l1 = l2 * result
-				expr = `${l1} / ${l2} = `
-			} while(result > multidiv_units_high)
+				let rhs = rand_int(2, opts.multidiv_units_high)
+				let lhs = rand_int(opts.multidiv_units_high, opts.multidiv_units_high*rhs)
+				result = Math.floor(lhs/rhs)
+				lhs = rhs * result
+				expr = `${lhs} / ${rhs} = `
+			} while(result > opts.multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		},
 		//÷ with remainder
 		() => {
 			do {
-				let l2 = rand_int(2, multidiv_units_high)
-				let l1 = rand_int(multidiv_units_high, multidiv_units_high*l2)
-				result = Math.floor(l1/l2)
-				remainder = rand_int(1, l2-1)
-				l1 = l2*result + remainder
-				expr = `${l1} / ${l2} = `
-			} while(result > multidiv_units_high)
+				let rhs = rand_int(2, opts.multidiv_units_high)
+				let lhs = rand_int(opts.multidiv_units_high, opts.multidiv_units_high*rhs)
+				result = Math.floor(lhs/rhs)
+				remainder = rand_int(1, rhs-1)
+				lhs = rhs*result + remainder
+				expr = `${lhs} / ${rhs} = `
+			} while(result > opts.multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result, remainder]
 		}
@@ -244,27 +242,30 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 		let result
 		let remainder
 		do {
-			let fi = i % 6
-			if (plus_only)
+			if (opts.plus_only)
 				[expr, result] = gen_funcs[0]()
-			else if (minus_only)
+			else if (opts.minus_only)
 				[expr, result] = gen_funcs[1]()
-			else if (plus_minus_only)
+			else if (opts.plus_minus_only)
 				[expr, result] = gen_funcs[2]()
-			else if (multiply_only)
+			else if (opts.multiply_only)
 				[expr, result] = gen_funcs[3]()
-			else if (div_only)
+			else if (opts.div_only)
 				[expr, result] = gen_funcs[4]()
-			else if (div_w_rem_only)
+			else if (opts.div_w_rem_only)
 				[expr, result, remainder] = gen_funcs[5]()
-			else
-				[expr, result, remainder] = gen_funcs[fi]()
+			else // mixed
+				[expr, result, remainder] = gen_funcs[i % 6]()
 			// log(`out ${expr} ${result}`)
-		} while (++tried < 20 && (result < 0 || result > result_max))
+		} while (++tried < 20 && (result < 0 || result > opts.result_max))
+			
 		let td_question = $('<td>')
 		td_question.append(`<label>${expr}</label>`)
 
-		let td_answer = $(`<td class=answer><input type='tel' id='result_${i}' class='answer_input' style='min-width: 2em;'>${remainder && "...<input type='tel' id='remainder_"+i+"' class='remainder_input' style='width: 1em;'>" || ""}</td>`)
+		let td_answer = $(`<td class=answer>
+			<input type='tel' id='result_${i}' class='answer_input' style='min-width: 2em;'>
+			${remainder && "...<input type='tel' id='remainder_"+i+"' class='remainder_input' style='width: 1em;'>" || ""}
+			</td>`)
 		td_answer.data('expr',   expr)
 		td_answer.data('result', result)
 		td_answer.data('remainder', remainder)
@@ -288,22 +289,25 @@ function gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_hi
 
 function gen_handler()
 {
-	let result_max = parseInt($('#result_max').val())
-	let l_units_low = parseInt($('#l_units_low').val())
-	let l_units_high = parseInt($('#l_units_high').val())
-	let r_units_low = parseInt($('#r_units_low').val())
-	let r_units_high = parseInt($('#r_units_high').val())
-	let multidiv_units_high = parseInt($('#multidiv_units_high').val())
+	let opts = {}
+	opts.result_max = parseInt($('#result_max').val())
+	opts.l_units_low = parseInt($('#l_units_low').val())
+	opts.l_units_high = parseInt($('#l_units_high').val())
+	opts.r_units_low = parseInt($('#r_units_low').val())
+	opts.r_units_high = parseInt($('#r_units_high').val())
+	opts.multidiv_units_high = parseInt($('#multidiv_units_high').val())
 
-	let minus_only = $('#minus_only').is(':checked')
-	let plus_only = $('#plus_only').is(':checked')
-	let plus_minus_only = $('#plus_minus_only').is(':checked')
-	let multiply_only = $('#multiply_only').is(':checked')
-	let div_only = $('#div_only').is(':checked')
-	let div_w_rem_only = $('#div_w_rem_only').is(':checked')
-	// console.log(`result_max ${typeof(result_max)}: ${result_max} minus_only ${minus_only}`)
+	opts.minus_only = $('#minus_only').is(':checked')
+	opts.plus_only = $('#plus_only').is(':checked')
+	opts.plus_minus_only = $('#plus_minus_only').is(':checked')
+	opts.multiply_only = $('#multiply_only').is(':checked')
+	opts.div_only = $('#div_only').is(':checked')
+	opts.div_w_rem_only = $('#div_w_rem_only').is(':checked')
+
+	console.log(`opts `, opts)
+	
 	reset_stat()
-	gen_exam(result_max, l_units_low, l_units_high, r_units_low, r_units_high, multidiv_units_high, plus_only, minus_only, plus_minus_only, multiply_only, div_only, div_w_rem_only)
+	gen_exam(opts)
 }
 
 // dark/white theme
