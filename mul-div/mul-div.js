@@ -21,19 +21,6 @@ function rand_int(low, high) {
 	return i
 }
 
-function rand_int_limit_units(low, high, low, high) {
-	if (low > high) {
-		alert(`low ${low} > high ${high}`)
-		return 0
-	}
-	let tried = 0
-	let i, units
-	do {
-		i = Math.round(Math.random()*(high-low) + low)
-		units = i % 10
-	} while (++tried < 20 && (units < low || units > high))
-	return i
-}
 
 
 $('#main').append(`<div style='position: fixed; top: 0px; width: 80%; padding: 4px; color: white; background: teal; '>
@@ -140,7 +127,7 @@ function reset_stat()
 	$('#ok_rate').html(``)
 }
 
-function gen_exam(l_low, l_high, r_low, r_high, multiply_only, div_only, div_w_rem_only)
+function gen_exam(muldiv_l_low, muldiv_l_high, muldiv_r_low, muldiv_r_high, op_mul_xx, op_div_xx, op_div_xx_rem)
 {
 	let low = 0 //Math.min(10, result_max - 1)
 	let result
@@ -152,8 +139,8 @@ function gen_exam(l_low, l_high, r_low, r_high, multiply_only, div_only, div_w_r
 	let gen_funcs = [
 		//×
 		() => {
-			let l1 = rand_int(l_low, l_high)
-			let l2 = rand_int(r_low, r_high)
+			let l1 = rand_int(muldiv_l_low, muldiv_l_high)
+			let l2 = rand_int(muldiv_r_low, muldiv_r_high)
 			expr = `${l1} × ${l2} = `
 			result = l1 * l2
 			// log(`expr ${expr} ${result}`)
@@ -162,25 +149,25 @@ function gen_exam(l_low, l_high, r_low, r_high, multiply_only, div_only, div_w_r
 		//÷
 		() => {
 			do {
-				let l2 = rand_int(Math.max(r_low, 2), r_high)
-				let l1 = rand_int(Math.max(r_low, 2)*l_low, r_high*l_high)
+				let l2 = rand_int(Math.max(muldiv_r_low, 2), muldiv_r_high)
+				let l1 = rand_int(Math.max(muldiv_r_low, 2)*muldiv_l_low, muldiv_r_high*muldiv_l_high)
 				result = Math.floor(l1/l2)
 				l1 = l2 * result
 				expr = `${l1} / ${l2} = `
-			} while(result > Math.max(r_high, l_high))
+			} while(result > Math.max(muldiv_r_high, muldiv_l_high))
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
 		},
 		//÷ with remainder
 		() => {
 			do {
-				let l2 = rand_int(Math.max(r_low, 2), r_high)
-				let l1 = rand_int(Math.max(r_low, 2)*l_low, r_high*l_high)
+				let l2 = rand_int(Math.max(muldiv_r_low, 2), muldiv_r_high)
+				let l1 = rand_int(Math.max(muldiv_r_low, 2)*muldiv_l_low, muldiv_r_high*muldiv_l_high)
 				result = Math.floor(l1/l2)
 				remainder = rand_int(1, l2-1)
 				l1 = l2*result + remainder
 				expr = `${l1} / ${l2} = `
-			} while(result > Math.max(r_high, l_high))
+			} while(result > Math.max(muldiv_r_high, muldiv_l_high))
 			// log(`expr ${expr} ${result}`)
 			return [expr, result, remainder]
 		}
@@ -204,11 +191,11 @@ function gen_exam(l_low, l_high, r_low, r_high, multiply_only, div_only, div_w_r
 		let remainder
 		do {
 			let fi = i % 3
-			if (multiply_only)
+			if (op_mul_xx)
 				[expr, result] = gen_funcs[0]()
-			else if (div_only)
+			else if (op_div_xx)
 				[expr, result] = gen_funcs[1]()
-			else if (div_w_rem_only)
+			else if (op_div_xx_rem)
 				[expr, result, remainder] = gen_funcs[2]()
 			else
 				[expr, result, remainder] = gen_funcs[fi]()
@@ -241,17 +228,17 @@ function gen_exam(l_low, l_high, r_low, r_high, multiply_only, div_only, div_w_r
 
 function gen_handler()
 {
-	let l_low = parseInt($('#l_low').val())
-	let l_high = parseInt($('#l_high').val())
-	let r_low = parseInt($('#r_low').val())
-	let r_high = parseInt($('#r_high').val())
+	let muldiv_l_low = parseInt($('#muldiv_l_low').val())
+	let muldiv_l_high = parseInt($('#muldiv_l_high').val())
+	let muldiv_r_low = parseInt($('#muldiv_r_low').val())
+	let muldiv_r_high = parseInt($('#muldiv_r_high').val())
 
-	let multiply_only = $('#multiply_only').is(':checked')
-	let div_only = $('#div_only').is(':checked')
-	let div_w_rem_only = $('#div_w_rem_only').is(':checked')
-	// console.log(`result_max ${typeof(result_max)}: ${result_max} minus_only ${minus_only}`)
+	let op_mul_xx = $('#op_mul_xx').is(':checked')
+	let op_div_xx = $('#op_div_xx').is(':checked')
+	let op_div_xx_rem = $('#op_div_xx_rem').is(':checked')
+	// console.log(`result_max ${typeof(result_max)}: ${result_max} op_sub ${op_sub}`)
 	reset_stat()
-	gen_exam(l_low, l_high, r_low, r_high, multiply_only, div_only, div_w_rem_only)
+	gen_exam(muldiv_l_low, muldiv_l_high, muldiv_r_low, muldiv_r_high, op_mul_xx, op_div_xx, op_div_xx_rem)
 }
 
 // dark/white theme

@@ -21,8 +21,9 @@
 
 		table {
 			border-collapse: collapse;
-			border-style: solid gray 1px;
-			margin-bottom: 2rem;
+			border: 1px solid gray;
+			margin-top: 1rem;
+			margin-bottom: 1rem;
 		}
 
 		table#questions {
@@ -30,15 +31,16 @@
 		}
 
 		tr {
-			border: solid gray 1px;
+			border: 1px solid gray;
 		}
 
 		tr.hls_row {
-			border: solid darkgreen 3px;
+			border: 3px solid darkgreen;
 		}
 
 		td {
 			text-align: right;
+			padding: 1px 0.2rem;
 		}
 
 		td.answer {
@@ -47,48 +49,75 @@
 
 		td.optv {
 			text-align: left;
+			border: 1px solid gray;
 		}
 
 		input {
 			width: 3em;
 			text-align: left;
 		}
+
+		input:disabled {
+			color: white;
+		}
+
+		label:has(input[type="radio"]:checked) {
+			color: white;
+			border: 2px solid darkcyan;
+			background: darkcyan;
+		}
+
+		label:has(input[type="radio"]:checked):before {
+			content: "✅";
+		}
+
+		input[name="class_level"] {
+			appearance: none;
+		}
 	</style>
 </head>
 
 <body>
 	<div id="main">
-		<div style='position: fixed; top: 0px; width: 80%; padding: 4px; color: white; background: teal; '>
-			准确率: <label id='ok_rate'></label><br>
-			用时: <label id='time_used'></label>
-			<div id='log'></div>
+		<div style="position: fixed; top: 0px; width: 20rem; padding: 4px; color: white; background: teal; ">
+			准确率: <label id="ok_rate"></label><br>
+			用时: <label id="time_used"></label>
+			<div id="log"></div>
 		</div>
 
-		<table>
-			<thead>
-				<tr>选项</tr>
-			</thead>
+		<table style="margin-top: 4.3rem;">
+			<tr>
+				<td>
+					<label for="class_low"><b>小学低年级</b>
+						<input type="radio" name="class_level" id="class_low" onchange="on_class_level_change()"
+							checked>
+					</label>
+				</td>
+				<td class="optv">
+					<label for="class_high"><b>小学高年级</b>
+						<input type="radio" name="class_level" id="class_high" onchange="on_class_level_change()">
+					</label>
+				</td>
+			</tr>
+
+		</table>
+
+		<table class="class_low">
 			<tr>
 				<td><label>结果范围 </label></td>
 				<td class="optv">
-					<input type="tel" id="result_min" style="min-width: 6em;" value="10" />
+					<!-- <input type="tel" id="result_min" style="min-width: 6em;" value="10" /> -->
 					<input type="tel" id="result_max" style="min-width: 6em;" value="100" />
 				</td>
 			</tr>
 			<tr>
-				<td>+-法左边个位范围</td>
+				<td>+-法个位范围</td>
 				<td class="optv">
-					<input type="tel" id="l_units_low" style="width: 2em;" value="0" />
-					~
-					<input type="tel" id="l_units_high" style="width: 2em;" value="6" />
-				</td>
-			</tr>
-			<tr>
-				<td>+-法右边个位范围</td>
-				<td class="optv">
-					<input type="tel" id="r_units_low" style="width: 2em;" value="6" />
-					~
-					<input type="tel" id="r_units_high" style="width: 2em;" value="9" />
+					<input type="tel" id="l_units_low" style="width: 1.5em;" value="0" />~<input type="tel"
+						id="l_units_high" style="width: 1.5em;" value="6" />
+					+-
+					<input type="tel" id="r_units_low" style="width: 1.5em;" value="6" />~<input type="tel"
+						id="r_units_high" style="width: 1.5em;" value="9" />
 				</td>
 			</tr>
 			<tr>
@@ -98,64 +127,106 @@
 			<tr>
 				<td>连+/连-次数</td>
 				<td class="optv">
-					<input type="tel" id="plus_minus_cont_cnt" style="width: 2em;" value="2" />
+					<input type="tel" id="add_sub_cont_cnt" style="width: 2em;" value="2" />
 				</td>
 			</tr>
 			<tr>
 				<td class="optv" colspan="3">计算类型</td>
 			</tr>
 			<tr>
-				<td><label for="plus_only">+</label></td>
+				<td><label for="op_add">+</label></td>
 				<td class="optv">
-					<input type="radio" name="type" id="plus_only">
+					<input type="radio" name="op_type" id="op_add">
 				</td>
 			</tr>
 			<tr>
-				<td><label for="minus_only">-</label></td>
+				<td><label for="op_sub">-</label></td>
 				<td class="optv">
-					<input type="radio" name="type" id="minus_only">
+					<input type="radio" name="op_type" id="op_sub">
 				</td>
 			</tr>
 			<tr>
-				<td><label for="plus_minus_only">+-</label></td>
+				<td><label for="op_add_sub_cont">+-</label></td>
 				<td class="optv">
-					<input type="radio" name="type" id="plus_minus_only">
+					<input type="radio" name="op_type" id="op_add_sub_cont">
 				</td>
 			</tr>
 			<tr>
-				<td><label for="multiply_only">×</label></td>
+				<td><label for="op_mul">×</label></td>
 				<td class="optv">
-					<input type="radio" name="type" id="multiply_only">
+					<input type="radio" name="op_type" id="op_mul">
 				</td>
 			</tr>
 			<tr>
-				<td><label for="div_only">÷</label></td>
+				<td><label for="op_div">÷</label></td>
 				<td class="optv">
-					<input type="radio" name="type" id="div_only">
+					<input type="radio" name="op_type" id="op_div">
 				</td>
 			</tr>
 			<tr>
-				<td><label for="div_only">÷ ...</label>
+				<td><label for="op_div_rem">÷ ...</label>
 				</td>
 				<td class="optv">
-					<input type="radio" name="type" id="div_w_rem_only">
-				</td>
-			</tr>
-			<tr>
-				<td><label for="mixed">混合</label></td>
-				<td class="optv">
-					<input type="radio" name="type" id="mixed" checked>
+					<input type="radio" name="op_type" id="op_div_rem">
 				</td>
 			</tr>
 			<tr>
-				<td></td>
+				<td><label for="op_mixed">混合</label></td>
 				<td class="optv">
-					<input type="button" value="Generate"
-						style="width: fit-content; font-size: x-large; /*margin-left: 6em;*/" onclick="gen_handler()">
+					<input type="radio" name="op_type" id="op_mixed" checked>
 				</td>
 			</tr>
 		</table>
-		
+
+		<table class="class_high">
+			<tr>
+				<td>
+					<label for="muldiv_duo_digits">两位数×÷两位数</label>
+				</td>
+				<td class="optv">
+					<input type="checkbox" name="op_type" id="muldiv_duo_digits"
+						onchange="on_muldiv_duo_digits_change()">
+				</td>
+			</tr>
+			<tr>
+				<td>×÷左边范围</td>
+				<td class="optv">
+					<input type="tel" id="muldiv_l_low" style="width: 3em;" value="100" /> ~
+					<input type="tel" id="muldiv_l_high" style="width: 3em;" value="1000" />
+				</td>
+			</tr>
+			<tr>
+				<td>×÷右边范围</td>
+				<td class="optv">
+					<input type="tel" id="muldiv_r_low" style="width: 3em;" value="1" /> ~
+					<input type="tel" id="muldiv_r_high" style="width: 3em;" value="10" />
+				</td>
+			</tr>
+			<tr>
+				<td class="optv" colspan="3">计算类型</td>
+			</tr>
+			<tr>
+				<td><label for="op_mul_xx">高年级×</label></td>
+				<td class="optv"><input type="radio" name="op_type" id="op_mul_xx"></td>
+			</tr>
+			<tr>
+				<td><label for="op_div_xx">高年级÷</label></td>
+				<td class="optv"><input type="radio" name="op_type" id="op_div_xx"></td>
+			</tr>
+			<tr>
+				<td><label for="op_div_xx_rem">高年级÷ ...</label></td>
+				<td class="optv"><input type="radio" name="op_type" id="op_div_xx_rem"></td>
+			</tr>
+			<tr>
+				<td><label for="op_xx_mixed">高年级混合</label></td>
+				<td class="optv"><input type="radio" name="op_type" id="op_xx_mixed"></td>
+			</tr>
+
+		</table>
+
+		<input type="button" value="Generate" style="width: fit-content; font-size: x-large; margin-left: 6em;"
+			onclick="gen_handler()">
+
 		<table id="questions"></table>
 
 	</div>

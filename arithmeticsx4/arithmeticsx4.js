@@ -5,6 +5,24 @@ let total_cnt = 100
 let correct_cnt = 0
 let modified_cnt = 0
 
+function ffs(n) {
+  if (n === 0) {
+    return 0; // Or -1, depending on desired behavior for no set bits
+  }
+  // Isolate the rightmost set bit
+  const rightmostOne = n & -n;
+  // Use logarithm base 2 to find its 1-based position
+  const position = Math.log2(rightmostOne) + 1;
+  return position;
+}
+
+// Example usage:
+// Binary of 18 is 010010, first set bit from right is position 2
+console.log(`Position of first set bit in 18: ${ffs(18)}`); // Output: 2
+// Binary of 12 is 1100, first set bit from right is position 3
+console.log(`Position of first set bit in 12: ${ffs(12)}`); // Output: 3
+
+
 let log = console.log
 
 function rand_int(low, high) {
@@ -31,14 +49,9 @@ function rand_int_limit_units(low, high, units_low, units_high) {
 	do {
 		i = Math.round(Math.random()*(high-low) + low)
 		units = i % 10
-	} while (++tried < 20 && (units < units_low || units > units_high))
+	} while (++tried < 50 && (units < units_low || units > units_high))
 	return i
 }
-
-
-$('#main').append(``)
-$('#main').append('')
-
 
 function update_input_handlers()
 {
@@ -136,10 +149,28 @@ function reset_stat()
 	$('#ok_rate').html(``)
 }
 
+const OP_ADD = 1 << 0;
+const OP_SUB = 1 << 1;
+const OP_MUL = 1 << 2;
+const OP_DIV = 1 << 3;
+const OP_DIV_REM = 1 << 4;
+const OP_ADD_SUB_CONT = 1 << 5;
+const OP_MIXED = 0xFF;
+const OP_MAX_BITS = 6
+
+const OP_MUL_XX = 1 << 8;
+const OP_DIV_XX = 1 << 9;
+const OP_DIV_XX_REM =  1 << 10;
+// const OP_MUL_DIV = OP_MUL | OP_DIV;
+const OP_XX_MIXED = 0xFF00;
+const OP_XX_MAX_BITS = 3
+
+
 function gen_exam(opts)
 {
 	// opts.result_max, opts.l_units_low, opts.l_units_high, opts.r_units_low, opts.r_units_high, 
-	// opts.multidiv_units_high, opts.plus_only, opts.minus_only, opts.plus_minus_only, opts.multiply_only, opts.div_only, opts.div_w_rem_only
+	// opts.multidiv_units_high, 
+	// opts.op_add, opts.op_sub, opts.op_add_sub_cont, opts.op_mul, opts.op_div, opts.op_div_rem
 	let low = 0 //Math.min(10, opts.result_max - 1)
 	let result
 
@@ -147,28 +178,28 @@ function gen_exam(opts)
 
 	qtable.empty()
 
-	let gen_funcs = [
+	const gen_funcs = new Map([
 		//+
-		() => {
+		[OP_ADD, () => {
 			let lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
 			let rhs = rand_int_limit_units(low, opts.result_max-lhs, opts.r_units_low, opts.r_units_high)
 			expr = `${lhs} + ${rhs} = `
 			result = lhs + rhs
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
-		},
+		}],
 		//-
-		() => {
+		[OP_SUB, () => {
 			let lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
 			let rhs = rand_int_limit_units(low, lhs, opts.r_units_low, opts.r_units_high)
 			expr = `${lhs} - ${rhs} = `
 			result = lhs - rhs
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
-		},
+		}],
 		//+-
-		() => {
-			let iter_cnt = parseInt($('#plus_minus_cont_cnt').val())
+		[OP_ADD_SUB_CONT, () => {
+			let iter_cnt = parseInt($('#add_sub_cont_cnt').val())
 			let lhs, rhs
 			lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
 			expr = `${lhs}`
@@ -188,18 +219,18 @@ function gen_exam(opts)
 			expr += ' = '
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
-		},
+		}],
 		//×
-		() => {
+		[OP_MUL, () => {
 			let lhs = rand_int(2, opts.multidiv_units_high)
-			let l2 = rand_int(2, opts.multidiv_units_high)
-			expr = `${lhs} × ${l2} = `
-			result = lhs * l2
+			let rhs = rand_int(2, opts.multidiv_units_high)
+			expr = `${lhs} × ${rhs} = `
+			result = lhs * rhs
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
-		},
+		}],
 		//÷
-		() => {
+		[OP_DIV, () => {
 			do {
 				let rhs = rand_int(2, opts.multidiv_units_high)
 				let lhs = rand_int(opts.multidiv_units_high, opts.multidiv_units_high*rhs)
@@ -209,9 +240,9 @@ function gen_exam(opts)
 			} while(result > opts.multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result]
-		},
+		}],
 		//÷ with remainder
-		() => {
+		[OP_DIV_REM, () => {
 			do {
 				let rhs = rand_int(2, opts.multidiv_units_high)
 				let lhs = rand_int(opts.multidiv_units_high, opts.multidiv_units_high*rhs)
@@ -222,8 +253,45 @@ function gen_exam(opts)
 			} while(result > opts.multidiv_units_high)
 			// log(`expr ${expr} ${result}`)
 			return [expr, result, remainder]
-		}
-	]
+		}],
+
+		// class high
+		//× xx
+		[OP_MUL_XX,() => {
+			let lhs = rand_int(opts.muldiv_l_low, opts.muldiv_l_high)
+			let rhs = rand_int(opts.muldiv_r_low, opts.muldiv_r_high)
+			expr = `${lhs} × ${rhs} = `
+			result = lhs * rhs
+			// log(`expr ${expr} ${result}`)
+			return [expr, result]
+		}],
+		//÷ xx
+		[OP_DIV_XX,() => {
+			do {
+				let rhs = rand_int(Math.max(opts.muldiv_r_low, 2), opts.muldiv_r_high)
+				let lhs = rand_int(Math.max(opts.muldiv_r_low, 2)*opts.muldiv_l_low, opts.muldiv_r_high*opts.muldiv_l_high)
+				result = Math.floor(lhs/rhs)
+				lhs = rhs * result
+				expr = `${lhs} / ${rhs} = `
+			} while(result > Math.max(opts.muldiv_r_high, opts.muldiv_l_high))
+			// log(`expr ${expr} ${result}`)
+			return [expr, result]
+		}],
+		//÷ with remainder
+		[OP_DIV_XX_REM,
+		() => {
+			do {
+				let rhs = rand_int(Math.max(opts.muldiv_r_low, 2), opts.muldiv_r_high)
+				let lhs = rand_int(Math.max(opts.muldiv_r_low, 2)*opts.muldiv_l_low, opts.muldiv_r_high*opts.muldiv_l_high)
+				result = Math.floor(lhs/rhs)
+				remainder = rand_int(1, rhs-1)
+				lhs = rhs*result + remainder
+				expr = `${lhs} / ${rhs} = `
+			} while(result > Math.max(opts.muldiv_r_high, opts.muldiv_l_high))
+			// log(`expr ${expr} ${result}`)
+			return [expr, result, remainder]
+		}]
+	])
 
 
 	function onfocus(e) {
@@ -236,28 +304,28 @@ function gen_exam(opts)
 		row.removeClass('hls_row')
 	}
 
+	let op=0
 	for (i=0; i<total_cnt; i++) {
 		let tried = 0
 		let expr
 		let result
 		let remainder
+		op = op || opts.ops
+		let op_next
 		do {
-			if (opts.plus_only)
-				[expr, result] = gen_funcs[0]()
-			else if (opts.minus_only)
-				[expr, result] = gen_funcs[1]()
-			else if (opts.plus_minus_only)
-				[expr, result] = gen_funcs[2]()
-			else if (opts.multiply_only)
-				[expr, result] = gen_funcs[3]()
-			else if (opts.div_only)
-				[expr, result] = gen_funcs[4]()
-			else if (opts.div_w_rem_only)
-				[expr, result, remainder] = gen_funcs[5]()
-			else // mixed
-				[expr, result, remainder] = gen_funcs[i % 6]()
+			if (opts.ops == OP_MIXED){
+				[expr, result, remainder] = gen_funcs.get(OP_ADD << (i % OP_MAX_BITS))()
+			} else if (opts.ops  == OP_XX_MIXED) {
+				[expr, result, remainder] = gen_funcs.get(OP_MUL_XX << (i % OP_XX_MAX_BITS))()
+			} else {
+				op_next  = 1 << (ffs(op) - 1);
+				[expr, result, remainder] = gen_funcs.get(op_next)()
+			}
+
 			// log(`out ${expr} ${result}`)
 		} while (++tried < 20 && (result < 0 || result > opts.result_max))
+
+		op &= ~op_next;
 			
 		let td_question = $('<td>')
 		td_question.append(`<label>${expr}</label>`)
@@ -296,19 +364,61 @@ function gen_handler()
 	opts.r_units_low = parseInt($('#r_units_low').val())
 	opts.r_units_high = parseInt($('#r_units_high').val())
 	opts.multidiv_units_high = parseInt($('#multidiv_units_high').val())
+	
+	opts.muldiv_l_low = parseInt($('#muldiv_l_low').val())
+	opts.muldiv_l_high = parseInt($('#muldiv_l_high').val())
+	opts.muldiv_r_low = parseInt($('#muldiv_r_low').val())
+	opts.muldiv_r_high = parseInt($('#muldiv_r_high').val())
 
-	opts.minus_only = $('#minus_only').is(':checked')
-	opts.plus_only = $('#plus_only').is(':checked')
-	opts.plus_minus_only = $('#plus_minus_only').is(':checked')
-	opts.multiply_only = $('#multiply_only').is(':checked')
-	opts.div_only = $('#div_only').is(':checked')
-	opts.div_w_rem_only = $('#div_w_rem_only').is(':checked')
+	opts.ops = 0
+	opts.ops |= $('#op_add').is(':checked') ? OP_ADD : 0
+	opts.ops |= $('#op_sub').is(':checked') ? OP_SUB : 0
+	opts.ops |= $('#op_add_sub_cont').is(':checked')? OP_ADD_SUB_CONT : 0
+	opts.ops |= $('#op_mul').is(':checked')? OP_MUL : 0
+	opts.ops |= $('#op_div').is(':checked') ? OP_DIV : 0
+	opts.ops |= $('#op_div_rem').is(':checked') ? OP_DIV_REM : 0
+	opts.ops |= $('#op_mixed').is(':checked') ? OP_MIXED : 0
+
+	opts.ops |= $('#op_mul_xx').is(':checked') ? OP_MUL_XX : 0
+	opts.ops |= $('#op_div_xx').is(':checked') ? OP_DIV_XX : 0
+	opts.ops |= $('#op_div_xx_rem').is(':checked') ? OP_DIV_XX_REM : 0
+	opts.ops |= $('#op_xx_mixed').is(':checked') ? OP_XX_MIXED : 0
 
 	console.log(`opts `, opts)
 	
 	reset_stat()
 	gen_exam(opts)
 }
+
+
+function on_class_level_change(e)
+{
+	$('input[name="op_type"]').prop('checked', false);
+	let checked = $("#class_low").is(':checked')
+	$(".class_low").css("display", checked?"":"none")
+	checked && $('#op_add').prop('checked', true)
+
+	checked = $("#class_high").is(':checked')
+	$(".class_high").css("display", checked?"":"none")
+	checked && $('#op_mul_xx').prop('checked', true)
+}
+on_class_level_change()
+
+function on_muldiv_duo_digits_change(e)
+{
+	if ($("#muldiv_duo_digits").is(':checked')) {
+		$("#muldiv_l_low").val(11)
+		$("#muldiv_l_high").val(99)
+		$("#muldiv_r_low").val(11)
+		$("#muldiv_r_high").val(99)
+	} else {
+		$("#muldiv_l_low").val(100)
+		$("#muldiv_l_high").val(1000)
+		$("#muldiv_r_low").val(1)
+		$("#muldiv_r_high").val(10)
+	}
+}
+on_muldiv_duo_digits_change()
 
 // dark/white theme
 let h = new Date().getHours()
