@@ -181,8 +181,16 @@ function gen_exam(opts)
 	const gen_funcs = new Map([
 		//+
 		[OP_ADD, () => {
-			let lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
-			let rhs = rand_int_limit_units(low, opts.result_max-lhs, opts.r_units_low, opts.r_units_high)
+			let lhs, rhs
+			do {
+				if (opts.result_max <= 20) {
+					lhs = rand_int(2, opts.result_max/2)
+					rhs = rand_int(0, opts.result_max-lhs)
+				} else {
+					lhs = rand_int_limit_units(2, opts.result_max, opts.l_units_low, opts.l_units_high)
+					rhs = rand_int_limit_units(0, opts.result_max-lhs, opts.r_units_low, opts.r_units_high)
+				}
+			} while(lhs < 2 || rhs < 2)
 			expr = `${lhs} + ${rhs} = `
 			result = lhs + rhs
 			// log(`expr ${expr} ${result}`)
