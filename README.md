@@ -1,8 +1,18 @@
 # Math Edu
 
+## Links
 
-https://htmlpreview.github.io/?https://github.com/z7z8th/math-edu/blob/master/arithmeticsx4/index.html
+[链接: 四则运算](https://htmlpreview.github.io/?https://github.com/z7z8th/math-edu/blob/master/arithmeticsx4/index.html)
 
-![alt text](imgs/class-low.png)
+## Test locally
 
-![alt text](imgs/class-high.png)
+```sh
+python3 -m http.server
+```
+
+## Screenshots
+
+![alt text](img/class-low.png)
+
+![alt text](img/class-high.png)
+
