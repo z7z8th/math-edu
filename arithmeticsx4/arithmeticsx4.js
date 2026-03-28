@@ -48,8 +48,8 @@ function rand_int_limit_units(low, high, units_low, units_high) {
 	debug(`units ${units}`)
 	let tens
 	let tried = 0
-	low = Math.floor(low/10)*10
-	high = Math.ceil(high/10)*10
+	low = Math.floor(low / 10) * 10
+	high = Math.ceil(high / 10) * 10
 	do {
 		tens = Math.floor(rand_int(low, high - units) / 10) * 10
 		if (tens < 0) {
@@ -437,7 +437,8 @@ on_muldiv_duo_digits_change()
 
 // dark/white theme
 let h = new Date().getHours()
-if (h >= 18 || h < 7) {
+let dark_theme = h >= 18 || h < 7
+if (dark_theme) {
 	$('html').css('backgroundColor', 'black')
 	$('html').css('color', 'lightgray')
 } else {
