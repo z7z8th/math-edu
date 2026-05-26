@@ -190,15 +190,15 @@ function gen_exam(opts) {
 			let lhs, rhs
 			do {
 				if (opts.result_max <= 20) {
-					lhs = rand_int(0, (opts.result_max - 2) / 2) + 2
-					rhs = rand_int(0, opts.result_max - lhs - 2) + 2
+					lhs = rand_int(2, opts.result_max / 2 - 0.5)
+					rhs = rand_int(2, opts.result_max / 2 - 0.5)
 				} else {
-					debug('---------------')
+					// debug('---------------')
 					lhs = rand_int_limit_units(2, opts.result_max, opts.l_units_low, opts.l_units_high)
-					debug(`lhs ${lhs}`)
-					debug('---')
+					// debug(`lhs ${lhs}`)
+					// debug('---')
 					rhs = rand_int_limit_units(0, opts.result_max - lhs, opts.r_units_low, opts.r_units_high)
-					debug(`rhs ${rhs}`)
+					// debug(`rhs ${rhs}`)
 				}
 			} while (lhs < 2 || rhs < 2)
 			expr = `${lhs} + ${rhs} = `
@@ -208,8 +208,15 @@ function gen_exam(opts) {
 		}],
 		//-
 		[OP_SUB, () => {
-			let lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
-			let rhs = rand_int_limit_units(low, lhs, opts.r_units_low, opts.r_units_high)
+			let lhs, rhs
+			if (opts.result_max <= 20) {
+				lhs = rand_int(2, opts.result_max / 2 + 0.5)
+				rhs = rand_int(2, opts.result_max / 2 - 0.5)
+				lhs = lhs + rhs
+			} else {
+				lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
+				rhs = rand_int_limit_units(low, lhs, opts.r_units_low, opts.r_units_high)
+			}
 			expr = `${lhs} - ${rhs} = `
 			result = lhs - rhs
 			// log(`expr ${expr} ${result}`)
