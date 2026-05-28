@@ -197,7 +197,7 @@ function gen_exam(opts) {
 					lhs = rand_int_limit_units(2, opts.result_max, opts.l_units_low, opts.l_units_high)
 					// debug(`lhs ${lhs}`)
 					// debug('---')
-					rhs = rand_int_limit_units(0, opts.result_max - lhs, opts.r_units_low, opts.r_units_high)
+					rhs = opts.add_sub_single ? rand_int(0.5, 10 + 0.5) : rand_int_limit_units(0, opts.result_max - lhs, opts.r_units_low, opts.r_units_high)
 					// debug(`rhs ${rhs}`)
 				}
 			} while (lhs < 2 || rhs < 2)
@@ -215,7 +215,7 @@ function gen_exam(opts) {
 				lhs = lhs + rhs
 			} else {
 				lhs = rand_int_limit_units(low, opts.result_max, opts.l_units_low, opts.l_units_high)
-				rhs = rand_int_limit_units(low, lhs, opts.r_units_low, opts.r_units_high)
+				rhs = opts.add_sub_single ? rand_int(0.5, 10 + 0.5) : rand_int_limit_units(low, lhs, opts.r_units_low, opts.r_units_high)
 			}
 			expr = `${lhs} - ${rhs} = `
 			result = lhs - rhs
@@ -388,6 +388,7 @@ function gen_handler() {
 	opts.r_units_low = parseInt($('#r_units_low').val())
 	opts.r_units_high = parseInt($('#r_units_high').val())
 	opts.multidiv_units_high = parseInt($('#multidiv_units_high').val())
+	opts.add_sub_single = !!$('#add_sub_single').is(':checked')
 
 	opts.muldiv_l_low = parseInt($('#muldiv_l_low').val())
 	opts.muldiv_l_high = parseInt($('#muldiv_l_high').val())
